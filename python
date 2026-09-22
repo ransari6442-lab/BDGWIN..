@@ -1,0 +1,85 @@
+from pathlib import Path
+import base64
+
+apk_path = Path("/mnt/data/BiggneRsWin.apk")
+html_path = Path("/mnt/data/BDGWIN_direct_APK_landing.html")
+
+apk_b64 = base64.b64encode(apk_path.read_bytes()).decode("ascii")
+
+html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07150f">
+<meta name="description" content="BDGWIN Admin Panel - Private Android Access">
+<title>BDGWIN Admin Panel | Private Android Access</title>
+<style>
+*{{box-sizing:border-box;margin:0;padding:0}}
+html,body{{width:100%;min-height:100%;background:#020806}}
+body{{
+  min-height:100vh;display:flex;justify-content:center;align-items:center;
+  padding:12px;font-family:Arial,Helvetica,sans-serif
+}}
+.wrapper{{
+  position:relative;width:min(100%,720px);overflow:hidden;border-radius:4px;
+  box-shadow:0 0 45px rgba(255,194,55,.16)
+}}
+.wrapper img{{display:block;width:100%;height:auto;user-select:none;-webkit-user-drag:none}}
+.download-link{{
+  position:absolute;left:12.1%;width:75.7%;top:62.9%;height:7.15%;
+  border-radius:28px;display:flex;align-items:center;justify-content:center;
+  text-decoration:none;color:transparent;background:transparent;cursor:pointer;
+  -webkit-tap-highlight-color:transparent
+}}
+.download-link:focus-visible{{outline:3px solid #fff;outline-offset:3px}}
+.download-link::after{{
+  content:"";position:absolute;inset:0;border-radius:28px;
+  opacity:0;background:rgba(255,255,255,.12);transition:.2s ease
+}}
+.download-link:hover::after,.download-link:active::after{{opacity:1}}
+@media(max-width:500px){{body{{padding:0}}.wrapper{{width:100%;border-radius:0}}}}
+</style>
+</head>
+<body>
+<main class="wrapper" aria-label="BDGWIN Admin Panel landing page">
+  <img src="data:image/png;base64,{base64.b64encode(Path('/mnt/data/Gemini_Generated_Image_h8jf2dh8jf2dh8jf.png').read_bytes()).decode('ascii')}"
+       alt="BDGWIN Admin Panel - Private Android Access">
+  <a id="downloadBtn" class="download-link" href="#" aria-label="Download BDGWIN APK">Download Now</a>
+</main>
+
+<script>
+const apkBase64 = "{apk_b64}";
+const downloadBtn = document.getElementById("downloadBtn");
+
+downloadBtn.addEventListener("click", function(e) {{
+  e.preventDefault();
+
+  const binary = atob(apkBase64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {{
+    bytes[i] = binary.charCodeAt(i);
+  }}
+
+  const blob = new Blob([bytes], {{
+    type: "application/vnd.android.package-archive"
+  }});
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "BiggneRsWin.apk";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+}});
+</script>
+</body>
+</html>
+"""
+
+html_path.write_text(html, encoding="utf-8")
+print(f"Created: {html_path}")
+print(f"HTML size: {html_path.stat().st_size / (1024*1024):.2f} MB")
